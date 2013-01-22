@@ -143,16 +143,20 @@ void init()
     glColor3f(0.0, 0.0, 0.0);
 
     glEnable(GL_DEPTH_TEST);
+/*
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0.0, 0.0, 0.0, 0.0, 5.0, 5.0);
+    glOrtho(0.0, 10.0, 10.0, 0.0, 0.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
+*/
 }
 
-void initGL(std::vector<packet> *p)
+void initGL(std::vector<packet> *p, int argc, char *argv[])
 {
     packets = p;
     particles = new std::vector<particle>();
+
+    glutInit(&argc, argv);
     
     glutCreateWindow("NetworkMonitor");
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_SINGLE);

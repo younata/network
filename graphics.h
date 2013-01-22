@@ -17,7 +17,7 @@ struct point2d {
     double y;
 };
 
-void initGL(std::vector<packet> *p);
+void initGL(std::vector<packet> *p, int argc, char *argv[]);
 
 struct point2d calculatePosition(unsigned char addr[], double height, double width);
 
