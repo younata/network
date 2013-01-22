@@ -99,7 +99,8 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pk
     packet p = packet(d, s, type);
 
     pthread_mutex_lock(&networkPacketsMutex);
-    packets->push_back(p);
+    if (packets->size() < 50)
+        packets->push_back(p);
     pthread_mutex_unlock(&networkPacketsMutex);
 /*
     printf("recieved a packet from ");

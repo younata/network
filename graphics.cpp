@@ -1,6 +1,7 @@
 #include "graphics.h"
 
 #include <assert.h>
+#include <unistd.h>
 
 extern pthread_mutex_t networkPacketsMutex;
 
@@ -8,6 +9,8 @@ struct particle {
     struct point2d start;
     struct point2d dest;
     struct point2d curr;
+
+    double speed;
 
     int cyclesToKeepAround;
     
@@ -91,7 +94,12 @@ void display()
         glEnd();
     }
     glFlush();
-    glutPostRedisplay();
+    //glutPostRedisplay();
+}
+
+void idleFrame(int i)
+{
+    idle();
 }
 
 void idle()
@@ -100,10 +108,13 @@ void idle()
         pthread_mutex_lock(&networkPacketsMutex);
         packet pkt = packets->back();
         particle p;
-        p.cyclesToKeepAround = 500;
+        p.cyclesToKeepAround = 30;
         p.start = calculatePosition(pkt.sourceAddr, 2, 2);
         p.dest = calculatePosition(pkt.destAddr, 2, 2);
         p.curr.x = p.start.x; p.curr.y = p.start.y;
+
+        p.speed = sqrt(p.curr.x * p.curr.x + p.curr.y * p.curr.y) / 30;
+
         switch (pkt.type) {
             case 0:
                 p.color[0] = 0.0;
@@ -146,14 +157,14 @@ void idle()
             }
         }
         if (keep) {
-            point2d c; c.x = p.curr.x; c.y = p.curr.y;
-            point2d a = calculateCurrentPosition(p.curr, p.dest, 0.001);
+            point2d a = calculateCurrentPosition(p.curr, p.dest, p.speed);
             p.curr.x = a.x; p.curr.y = a.y;
             particles->erase(i);
             particles->insert(i, p);
-            //assert(c.x != p.curr.x && c.y != p.curr.y);
         }
     }
+    display();
+    glutTimerFunc(33, idleFrame, 0);
 }
 
 void changeSize(int w, int h)
@@ -183,13 +194,22 @@ void init()
     glEnable(GL_DEPTH_TEST);
 }
 
+void *runGLThread(void *args)
+{
+    while (1) {
+        usleep(33000);
+        idle();
+        glutPostRedisplay();
+    }
+}
+
 void initGL(std::vector<packet> *p, int argc, char *argv[])
 {
     packets = p;
     particles = new std::vector<particle>();
 
     glutInit(&argc, argv);
-    
+
     glutCreateWindow("NetworkMonitor");
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_SINGLE);
     glutInitWindowPosition(400,400);
@@ -198,6 +218,13 @@ void initGL(std::vector<packet> *p, int argc, char *argv[])
     glutReshapeFunc(changeSize);
     particleWidth = 8.0 / 800.0;
     init();
-    glutIdleFunc(idle);
+    glutIdleFunc(NULL);
+    glutTimerFunc(33, idleFrame, 0);
+    /*
+    pthread_t glThread;
+    pthread_create(&glThread, NULL, runGLThread, NULL);
+    */
     glutMainLoop();
+
+    //pthread_join(glThread, NULL);
 }
