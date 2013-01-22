@@ -20,6 +20,7 @@ struct point2d {
 void initGL(std::vector<packet> *p, int argc, char *argv[]);
 
 struct point2d calculatePosition(unsigned char addr[], double height, double width);
+struct point2d calculateCurrentPosition(struct point2d curr, struct point2d dest, double speed);
 
 void idle();
 

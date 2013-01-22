@@ -102,9 +102,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pk
     for (int i = 0; i < 4; i++) {
         s[i] = s[i] & 0xFF;
         d[i] = d[i] & 0xFF;
-        printf("%02x", s[i]);
     }
-    printf("\n");
 
     packet p = packet(d, s, type);
 
