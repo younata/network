@@ -10,10 +10,11 @@
 #include <math.h>
 
 #include "main.h"
+#include "net.h"
 
 struct point2d {
-    double x,
-    double y,
+    double x;
+    double y;
 };
 
 void initGL(std::vector<packet> *p);

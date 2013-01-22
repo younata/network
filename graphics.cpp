@@ -1,14 +1,16 @@
 #include "graphics.h"
 
+extern pthread_mutex_t networkPacketsMutex;
+
 struct particle {
     struct point2d start;
-    struct point2d end;
-    struct point2d pos;
+    struct point2d dest;
+    struct point2d curr;
     
     double color[3];
 };
 
-std::vector<packet> *packets
+std::vector<packet> *packets;
 
 std::vector<particle> *particles;
 
@@ -49,7 +51,7 @@ struct point2d calculateCurrentPosition(struct point2d curr, struct point2d dest
     if (dt < 0) {
         return dest;
     }
-    double angle = cos(y, x);
+    double angle = atan2(y, x);
     x = dt * cos(angle);
     y = dt * sin(angle);
     ret.x = dest.x - x;
@@ -60,31 +62,41 @@ struct point2d calculateCurrentPosition(struct point2d curr, struct point2d dest
 void idle()
 {
     while (packets->size() != 0) {
-        pthread_mutex_lock(packetsMutex);
+        pthread_mutex_lock(&networkPacketsMutex);
         packet pkt = packets->back();
         particle p;
         p.start = calculatePosition(pkt.sourceAddr, maxWidth, maxWidth);
-        p.end = calculatePosition(pkt.destAddr, maxWidth, maxWidth);
-        p.pos = p.start;
+        p.dest = calculatePosition(pkt.destAddr, maxWidth, maxWidth);
+        p.curr = p.start;
         switch (pkt.type) {
             case 0:
-                p.color = {0.0, 0.5, 1.0};
+                p.color[0] = 0.0;
+                p.color[1] = 0.5;
+                p.color[2] = 1.0;
                 break;
             case 1:
-                p.color = {0.0, 1.0, 0.0};
+                p.color[0] = 0.0;
+                p.color[1] = 1.0;
+                p.color[2] = 0.0;
                 break;
             case 2:
-                p.color = {0.0, 0.0, 1.0};
+                p.color[0] = 0.0;
+                p.color[1] = 0.0;
+                p.color[2] = 1.0;
                 break;
             case 3:
-                p.color = {0.0, 1.0, 0.5};
+                p.color[0] = 0.0;
+                p.color[1] = 1.0;
+                p.color[2] = 0.5;
                 break;
             case 4:
-                p.color = {1.0, 0.0, 0.0};
+                p.color[0] = 1.0;
+                p.color[1] = 0.0;
+                p.color[2] = 0.0;
                 break;
         }
         packets->pop_back();
-        pthread_mutex_unlock(packetsMutex);
+        pthread_mutex_unlock(&networkPacketsMutex);
         particles->push_back(p);
     }
     for (std::vector<particle>::iterator i = particles->begin(); i < particles->end(); i++) {
@@ -117,7 +129,7 @@ void display()
 
             glColor3f(p.color[0], p.color[1], p.color[2]);
             vert[0] = p.curr.x;
-            vert1 = p.curr.y + (particleWidth / 2.0);
+            vert[1] = p.curr.y + (particleWidth / 2.0);
             glVertex3fv(vert);
         glEnd();
     }

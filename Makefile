@@ -1,3 +1,3 @@
 CC=clang
 all:
-	g++ -g -lpcap main.cpp net.cpp -o network
+	g++ -g -framework GLUT -framework OpenGL -lpthread -lpcap -lm main.cpp graphics.cpp net.cpp -o network

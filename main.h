@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-pthread_mutex_t packetsMutex;
+pthread_mutex_t networkPacketsMutex;
 
 class packet;
 

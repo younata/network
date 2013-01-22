@@ -1,5 +1,7 @@
 #include "net.h"
 
+extern pthread_mutex_t networkPacketsMutex;
+
 /*
 class packet {
     unsigned char destAddr[4];
@@ -56,7 +58,7 @@ void print_payload(const u_char *payload, int len);
 
 void print_hex_ascii_line(const u_char *payload, int len, int offset);
 
-void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
+void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pkt)
 {
     const struct sniff_ethernet *ethernet;
     const struct sniff_ip *ip;
@@ -68,9 +70,9 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
 
     unsigned char type;
 
-    ethernet = (struct sniff_ethernet*)(packet);
+    ethernet = (struct sniff_ethernet*)(pkt);
 
-    ip = (struct sniff_ip*)(packet + SIZE_ETHERNET);
+    ip = (struct sniff_ip*)(pkt + SIZE_ETHERNET);
     size_ip = IP_HL(ip)*4;
     if (size_ip < 20) {
         return;
@@ -100,9 +102,11 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pa
     s = (unsigned char *)&src.s_addr;
     d = (unsigned char *)&dst.s_addr;
 
-    pthread_mutex_lock(packetsMutex);
-    packets->push_back(packet(d, s, type));
-    pthread_mutex_unlock(packetsMutex);
+    packet p = packet(d, s, type);
+
+    pthread_mutex_lock(&networkPacketsMutex);
+    packets->push_back(p);
+    pthread_mutex_unlock(&networkPacketsMutex);
 /*
     printf("recieved a packet from ");
     for (int i = 0; i < 4; i++) {
