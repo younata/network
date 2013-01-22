@@ -16,9 +16,32 @@ std::vector<packet> *packets;
 
 std::vector<particle> *particles;
 
-//double maxHeight = 5.0;
 double maxWidth = 10.0;
 double particleWidth = 0.025;
+
+double d = particleWidth / 2.0;
+
+/*
+void particle::render()
+{
+    glBegin(GL_QUADS);
+        glColor3f(color[0], color[1], color[2]);
+        glVertex2f(curr.x - d, curr.y - d);
+        glVertex2f(curr.x + d, curr.y - d);
+        glVertex2f(curr.x + d, curr.y + d);
+        glVertex2f(curr.x - d, curr.y + d);
+    glEnd();
+
+    // draw the trail.
+    glBegin(GL_TRIANGLES);
+        glColor3f(color[0], color[1], color[2]);
+        glVertex2f(curr.x - d, curr.y);
+        glVertex2f(curr.x, curr.y);
+        glColor3f(0,0,0);
+        glVertex2f(start.x, start.y);
+    glEnd();
+}
+*/
 
 struct point2d calculatePosition(unsigned char addr[], double height, double width)
 {
@@ -110,8 +133,10 @@ void idle()
             particles->erase(i);
         }
         point2d c; c.x = p.curr.x; c.y = p.curr.y;
-        point2d a = calculateCurrentPosition(p.curr, p.dest, 0.5);
+        point2d a = calculateCurrentPosition(p.curr, p.dest, 0.001);
         p.curr.x = a.x; p.curr.y = a.y;
+        particles->erase(i);
+        particles->insert(i, p);
         //assert(c.x != p.curr.x && c.y != p.curr.y);
     }
 }
@@ -125,6 +150,7 @@ void display()
     glShadeModel(GL_SMOOTH);
     for (std::vector<particle>::iterator i = particles->begin(); i < particles->end(); i++) {
         particle p = *i;
+        //p.render();
 ///*
         glBegin(GL_QUADS);
             glColor3f(p.color[0], p.color[1], p.color[2]);
@@ -132,6 +158,14 @@ void display()
             glVertex2f(p.curr.x + d, p.curr.y - d);
             glVertex2f(p.curr.x + d, p.curr.y + d);
             glVertex2f(p.curr.x - d, p.curr.y + d);
+        glEnd();
+
+        glBegin(GL_TRIANGLES);
+            glColor3f(p.color[0], p.color[1], p.color[2]);
+            glVertex2f(p.curr.x - d, p.curr.y);
+            glVertex2f(p.curr.x, p.curr.y);
+            glColor3f(1,1,1);
+            glVertex2f(p.start.x, p.start.y);
         glEnd();
 //*/
 /*
@@ -155,6 +189,23 @@ void display()
     }
     glFlush();
     glutPostRedisplay();
+}
+
+void changeSize(int w, int h) {
+
+	if(h == 0)
+		h = 1;
+	float ratio = 1.0* w / h;
+
+	glMatrixMode(GL_PROJECTION);
+
+	glLoadIdentity();
+
+	glViewport(0, 0, w, h);
+
+	gluPerspective(45,ratio,1,1000);
+
+	glMatrixMode(GL_MODELVIEW);
 }
 
 void init()
@@ -183,6 +234,7 @@ void initGL(std::vector<packet> *p, int argc, char *argv[])
     glutInitWindowPosition(400,400);
     glutInitWindowSize(800,800);
     glutDisplayFunc(display);
+    //glutReshapeFunc(changeSize);
     init();
     glutIdleFunc(idle);
     glutMainLoop();
