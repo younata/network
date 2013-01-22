@@ -2,4 +2,4 @@ This is a graphical representation of packets moving about the IPv4 space.
 
 This relies on pcap to run, which unfortunately requires root to run.
 
-This has been built & tested on osx only, it should build on other unixes if the makefile is changed. Because pcap, it will likely not build on windows.
+This has been built & tested on osx only, it should build on other unixes, though. Because pcap, it will likely not build on windows.

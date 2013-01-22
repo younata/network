@@ -129,31 +129,40 @@ void *initNet(void *arg)
 
     dev = "en1";
 
-/*
     if ((dev = pcap_lookupdev(errbuf)) == NULL) {
         fprintf(stderr, "Couldn't find default device: %s\n", errbuf);
-        dev = "en1";
+        exit(-1);
     }
-*/
 
     if (pcap_lookupnet(dev, &net, &mask, errbuf) == -1) {
         fprintf(stderr, "Couldn't get netmask for device %s: %s\n", dev, errbuf);
         net = mask = 0;
+#ifdef __APPLE__
+        dev = "en1";
+        fprintf(stderr, "Trying device en1\n");
+        if (pcap_lookupnet(dev, &net, &mask, errbuf) == -1) {
+            fprintf(stderr, "Couldn't get netmask for device %s: %s\n", dev, errbuf);
+            net = mask = 0;
+            exit(-2);
+        }
+#else
+        exit(-2);
+#endif
     }
 
     if ((handle = pcap_open_live(dev, SNAP_LEN, -1, 1000, errbuf)) == NULL) {
         fprintf(stderr, "Couldn't open device %s: %s\n", dev, errbuf);
-        exit(-2);
+        exit(-3);
     }
 
     if (pcap_compile(handle, &fp, filter_exp, 0, net) == -1) {
         fprintf(stderr, "error");
-        exit(-3);
+        exit(-4);
     }
 
     if (pcap_setfilter(handle, &fp) == -1) {
         fprintf(stderr, "error");
-        exit(-4);
+        exit(-5);
     }
 
     pcap_loop(handle, -1, got_packet, NULL);

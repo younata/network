@@ -1,3 +1,12 @@
-CC=clang
+UNAME := $(shell uname)
+
+FLAGS = -lpthread -lpcap -lm
+
+ifeq ($(UNAME),Darwin)
+	FLAGS += -framework GLUT -framework OpenGL
+else
+	FLAGS += -lGL -lGLU -lglut
+endif
+
 all:
-	g++ -g -framework GLUT -framework OpenGL -lpthread -lpcap -lm main.cpp graphics.cpp net.cpp -o network
+	g++ $(FLAGS) main.cpp graphics.cpp net.cpp -o network
