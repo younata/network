@@ -23,28 +23,6 @@ double particleWidth = 0.025;
 
 double d = particleWidth / 2.0;
 
-/*
-void particle::render()
-{
-    glBegin(GL_QUADS);
-        glColor3f(color[0], color[1], color[2]);
-        glVertex2f(curr.x - d, curr.y - d);
-        glVertex2f(curr.x + d, curr.y - d);
-        glVertex2f(curr.x + d, curr.y + d);
-        glVertex2f(curr.x - d, curr.y + d);
-    glEnd();
-
-    // draw the trail.
-    glBegin(GL_TRIANGLES);
-        glColor3f(color[0], color[1], color[2]);
-        glVertex2f(curr.x - d, curr.y);
-        glVertex2f(curr.x, curr.y);
-        glColor3f(0,0,0);
-        glVertex2f(start.x, start.y);
-    glEnd();
-}
-*/
-
 struct point2d calculatePosition(unsigned char addr[], double height, double width)
 {
     struct point2d ret;
@@ -87,6 +65,35 @@ struct point2d calculateCurrentPosition(struct point2d curr, struct point2d dest
     ret.x = dest.x - x;
     ret.y = dest.y - y;
     return ret;
+}
+
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    float vert[3];
+    double d = particleWidth / 2.0;
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glShadeModel(GL_SMOOTH);
+    for (std::vector<particle>::iterator i = particles->begin(); i < particles->end(); i++) {
+        particle p = *i;
+        glBegin(GL_QUADS);
+            glColor3f(p.color[0], p.color[1], p.color[2]);
+            glVertex2f(p.curr.x - d, p.curr.y - d);
+            glVertex2f(p.curr.x + d, p.curr.y - d);
+            glVertex2f(p.curr.x + d, p.curr.y + d);
+            glVertex2f(p.curr.x - d, p.curr.y + d);
+        glEnd();
+
+        glBegin(GL_TRIANGLES);
+            glColor3f(p.color[0], p.color[1], p.color[2]);
+            glVertex2f(p.curr.x - d, p.curr.y);
+            glVertex2f(p.curr.x + d, p.curr.y);
+            glColor3f(1,1,1);
+            glVertex2f(p.start.x, p.start.y);
+        glEnd();
+    }
+    glFlush();
+    glutPostRedisplay();
 }
 
 void idle()
@@ -151,59 +158,9 @@ void idle()
     }
 }
 
-void display()
+void changeSize(int w, int h)
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    float vert[3];
-    double d = particleWidth / 2.0;
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glShadeModel(GL_SMOOTH);
-    for (std::vector<particle>::iterator i = particles->begin(); i < particles->end(); i++) {
-        particle p = *i;
-        //p.render();
-///*
-        glBegin(GL_QUADS);
-            glColor3f(p.color[0], p.color[1], p.color[2]);
-            glVertex2f(p.curr.x - d, p.curr.y - d);
-            glVertex2f(p.curr.x + d, p.curr.y - d);
-            glVertex2f(p.curr.x + d, p.curr.y + d);
-            glVertex2f(p.curr.x - d, p.curr.y + d);
-        glEnd();
-
-        glBegin(GL_TRIANGLES);
-            glColor3f(p.color[0], p.color[1], p.color[2]);
-            glVertex2f(p.curr.x - d, p.curr.y);
-            glVertex2f(p.curr.x + d, p.curr.y);
-            glColor3f(1,1,1);
-            glVertex2f(p.start.x, p.start.y);
-        glEnd();
-//*/
-/*
-        glBegin(GL_TRIANGLES);
-            glColor3f(p.color[0], p.color[1], p.color[2]);
-            vert[0] = p.curr.x - (particleWidth / 2.0);
-            vert[1] = p.curr.y - (particleWidth / 2.0);
-            vert[2] = 0;
-            glVertex3fv(vert);
-
-            glColor3f(p.color[0], p.color[1], p.color[2]);
-            vert[0] = p.curr.x + (particleWidth / 2.0);
-            glVertex3fv(vert);
-
-            glColor3f(p.color[0], p.color[1], p.color[2]);
-            vert[0] = p.curr.x;
-            vert[1] = p.curr.y + (particleWidth / 2.0);
-            glVertex3fv(vert);
-        glEnd();
-//*/
-    }
-    glFlush();
-    glutPostRedisplay();
-}
-
-void changeSize(int w, int h) {
-
-	if(h == 0)
+	if (h == 0)
 		h = 1;
 	float ratio = 1.0* w / h;
 
@@ -220,12 +177,6 @@ void init()
     glColor3f(0.0, 0.0, 0.0);
 
     glEnable(GL_DEPTH_TEST);
-///*
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, 10.0, 10.0, 0.0, 0.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-//*/
 }
 
 void initGL(std::vector<packet> *p, int argc, char *argv[])

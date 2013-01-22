@@ -2,14 +2,6 @@
 
 extern pthread_mutex_t networkPacketsMutex;
 
-/*
-class packet {
-    unsigned char destAddr[4];
-    unsigned char sourceAddr[4];
-    unsigned int time;
-};
-*/
-
 static std::vector<packet> *packets;
 
 /* default snap length (maximum bytes per packet to capture) */
