@@ -8,6 +8,8 @@ struct particle {
     struct point2d start;
     struct point2d dest;
     struct point2d curr;
+
+    int cyclesToKeepAround;
     
     double color[3];
 };
@@ -62,8 +64,8 @@ struct point2d calculatePosition(unsigned char addr[], double height, double wid
     assert(x < maxheight);
     assert(y < maxheight);
 
-    ret.x = ((double)x / (maxheight));// * width;
-    ret.y = ((double)y / (maxheight));// * height;
+    ret.x = (((double)x / (maxheight)) * 2) - 1;// * width;
+    ret.y = (((double)y / (maxheight)) * 2) - 1;// * height;
 
     return ret;
 }
@@ -89,12 +91,13 @@ struct point2d calculateCurrentPosition(struct point2d curr, struct point2d dest
 
 void idle()
 {
-    while (packets->size() != 0) {
+    if (packets->size() != 0) {
         pthread_mutex_lock(&networkPacketsMutex);
         packet pkt = packets->back();
         particle p;
-        p.start = calculatePosition(pkt.sourceAddr, maxWidth, maxWidth);
-        p.dest = calculatePosition(pkt.destAddr, maxWidth, maxWidth);
+        p.cyclesToKeepAround = 500;
+        p.start = calculatePosition(pkt.sourceAddr, 2, 2);
+        p.dest = calculatePosition(pkt.destAddr, 2, 2);
         p.curr.x = p.start.x; p.curr.y = p.start.y;
         switch (pkt.type) {
             case 0:
@@ -129,15 +132,22 @@ void idle()
     }
     for (std::vector<particle>::iterator i = particles->begin(); i < particles->end(); i++) {
         particle p = *i;
+        bool keep = true;
         if (p.curr.x == p.dest.x && p.curr.y == p.dest.y) {
-            particles->erase(i);
+            p.cyclesToKeepAround--;
+            if (p.cyclesToKeepAround <= 0) {
+                keep = false;
+                particles->erase(i);
+            }
         }
-        point2d c; c.x = p.curr.x; c.y = p.curr.y;
-        point2d a = calculateCurrentPosition(p.curr, p.dest, 0.001);
-        p.curr.x = a.x; p.curr.y = a.y;
-        particles->erase(i);
-        particles->insert(i, p);
-        //assert(c.x != p.curr.x && c.y != p.curr.y);
+        if (keep) {
+            point2d c; c.x = p.curr.x; c.y = p.curr.y;
+            point2d a = calculateCurrentPosition(p.curr, p.dest, 0.001);
+            p.curr.x = a.x; p.curr.y = a.y;
+            particles->erase(i);
+            particles->insert(i, p);
+            //assert(c.x != p.curr.x && c.y != p.curr.y);
+        }
     }
 }
 
@@ -163,7 +173,7 @@ void display()
         glBegin(GL_TRIANGLES);
             glColor3f(p.color[0], p.color[1], p.color[2]);
             glVertex2f(p.curr.x - d, p.curr.y);
-            glVertex2f(p.curr.x, p.curr.y);
+            glVertex2f(p.curr.x + d, p.curr.y);
             glColor3f(1,1,1);
             glVertex2f(p.start.x, p.start.y);
         glEnd();
@@ -198,13 +208,9 @@ void changeSize(int w, int h) {
 	float ratio = 1.0* w / h;
 
 	glMatrixMode(GL_PROJECTION);
-
 	glLoadIdentity();
-
 	glViewport(0, 0, w, h);
-
-	gluPerspective(45,ratio,1,1000);
-
+	gluPerspective(0,ratio,1,1000);
 	glMatrixMode(GL_MODELVIEW);
 }
 
@@ -214,12 +220,12 @@ void init()
     glColor3f(0.0, 0.0, 0.0);
 
     glEnable(GL_DEPTH_TEST);
-/*
+///*
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0, 10.0, 10.0, 0.0, 0.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
-*/
+//*/
 }
 
 void initGL(std::vector<packet> *p, int argc, char *argv[])
@@ -234,7 +240,7 @@ void initGL(std::vector<packet> *p, int argc, char *argv[])
     glutInitWindowPosition(400,400);
     glutInitWindowSize(800,800);
     glutDisplayFunc(display);
-    //glutReshapeFunc(changeSize);
+    glutReshapeFunc(changeSize);
     init();
     glutIdleFunc(idle);
     glutMainLoop();
