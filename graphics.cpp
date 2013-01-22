@@ -15,8 +15,8 @@ std::vector<packet> *packets;
 std::vector<particle> *particles;
 
 //double maxHeight = 5.0;
-double maxWidth = 5.0;
-double particleWidth = 0.05;
+double maxWidth = 10.0;
+double particleWidth = 0.1;
 
 struct point2d calculatePosition(unsigned char addr[], double height, double width)
 {

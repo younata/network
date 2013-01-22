@@ -3,7 +3,7 @@
 #include "net.h"
 #include "graphics.h"
 
-extern pthread_mutex_t networkPacketsMutex;
+pthread_mutex_t networkPacketsMutex;
 
 int main(int argc, char *argv[])
 {
