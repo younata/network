@@ -43,7 +43,9 @@ struct sniff_ip {
     u_char  ip_ttl;                 /* time to live */
     u_char  ip_p;                   /* protocol */
     u_short ip_sum;                 /* checksum */
-    struct  in_addr ip_src,ip_dst;  /* source and dest address */
+    unsigned char ip_src[4];
+    unsigned char ip_dst[4];
+    //struct  in_addr ip_src,ip_dst;  /* source and dest address */
 };
 
 #define IP_HL(ip)               (((ip)->ip_vhl) & 0x0f)
@@ -66,8 +68,6 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pk
 
     int size_ip, size_tcp, size_payload;
 
-    struct in_addr src,dst;
-
     unsigned char type;
 
     ethernet = (struct sniff_ethernet*)(pkt);
@@ -78,9 +78,6 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pk
         return;
     }
 
-    src = ip->ip_src;
-    dst = ip->ip_dst;
-    
     switch (ip->ip_p) {
         case IPPROTO_TCP:
             type = 0;
@@ -99,8 +96,15 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pk
 			break;;
 	}
     unsigned char *s, *d;
-    s = (unsigned char *)&src.s_addr;
-    d = (unsigned char *)&dst.s_addr;
+    s = (unsigned char *)ip->ip_src;
+    d = (unsigned char *)ip->ip_dst;
+
+    for (int i = 0; i < 4; i++) {
+        s[i] = s[i] & 0xFF;
+        d[i] = d[i] & 0xFF;
+        printf("%02x", s[i]);
+    }
+    printf("\n");
 
     packet p = packet(d, s, type);
 
