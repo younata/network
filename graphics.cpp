@@ -21,8 +21,6 @@ std::vector<particle> *particles;
 double maxWidth = 10.0;
 double particleWidth = 0.025;
 
-double d = particleWidth / 2.0;
-
 struct point2d calculatePosition(unsigned char addr[], double height, double width)
 {
     struct point2d ret;
@@ -164,6 +162,12 @@ void changeSize(int w, int h)
 		h = 1;
 	float ratio = 1.0* w / h;
 
+    if (w > h) {
+        particleWidth = 8.0 / h;
+    } else {
+        particleWidth = 8.0 / w;
+    }
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glViewport(0, 0, w, h);
@@ -192,6 +196,7 @@ void initGL(std::vector<packet> *p, int argc, char *argv[])
     glutInitWindowSize(800,800);
     glutDisplayFunc(display);
     glutReshapeFunc(changeSize);
+    particleWidth = 8.0 / 800.0;
     init();
     glutIdleFunc(idle);
     glutMainLoop();

@@ -9,4 +9,4 @@ else
 endif
 
 all:
-	g++ $(FLAGS) main.cpp graphics.cpp net.cpp -o network
+	g++ main.cpp graphics.cpp net.cpp -o network $(FLAGS)
