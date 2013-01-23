@@ -119,8 +119,9 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pk
 
 void *initNet(void *arg)
 {
-    packets = (std::vector<packet>*)arg;
-    char *dev = NULL;
+    struct argumentsToInitNet args = *(struct argumentsToInitNet*)arg;
+    packets = args.p;
+    char *dev = args.deviceName;
     char errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *handle;
 
@@ -128,11 +129,11 @@ void *initNet(void *arg)
     struct bpf_program fp;
     bpf_u_int32 mask, net;
 
-    dev = "en1";
-
-    if ((dev = pcap_lookupdev(errbuf)) == NULL) {
-        fprintf(stderr, "Couldn't find default device: %s\n", errbuf);
-        exit(-1);
+    if (dev == NULL) {
+        if ((dev = pcap_lookupdev(errbuf)) == NULL) {
+            fprintf(stderr, "Couldn't find default device: %s\n", errbuf);
+            exit(-1);
+        }
     }
 
     if (pcap_lookupnet(dev, &net, &mask, errbuf) == -1) {

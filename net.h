@@ -9,6 +9,11 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+struct argumentsToInitNet {
+    std::vector<packet> *p;
+    char *deviceName;
+};
+
 class packet {
 public:
     unsigned char destAddr[4];
