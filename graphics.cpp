@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <unistd.h>
 
+#include <algorithm>
+
 extern pthread_mutex_t networkPacketsMutex;
 
 struct particle {
@@ -20,8 +22,6 @@ struct particle {
 std::vector<packet> *packets;
 
 std::vector<particle> *particles;
-
-double background[] = {0.0, 0.0, 0.0, 0.0};
 
 int totalCycles = 30;
 
@@ -51,8 +51,8 @@ struct point2d calculatePosition(unsigned char addr[], double height, double wid
     assert(x < maxheight);
     assert(y < maxheight);
 
-    ret.x = (((double)x / (maxheight)) * 2) - 1;// * width;
-    ret.y = (((double)y / (maxheight)) * 2) - 1;// * height;
+    ret.x = (((double)x / (maxheight)) * 2) - 1;
+    ret.y = (((double)y / (maxheight)) * 2) - 1;
 
     return ret;
 }
@@ -76,6 +76,8 @@ struct point2d calculateCurrentPosition(struct point2d curr, struct point2d dest
     return ret;
 }
 
+bool sortParticle(particle a, particle b) { return (a.cyclesToKeepAround < b.cyclesToKeepAround); }
+
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -83,6 +85,7 @@ void display()
     double d = particleWidth / 2.0;
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glShadeModel(GL_SMOOTH);
+    glDepthMask(false);
     for (std::vector<particle>::iterator i = particles->begin(); i < particles->end(); i++) {
         particle p = *i;
         double blah = (double)p.cyclesToKeepAround / (double)totalCycles;
@@ -95,13 +98,15 @@ void display()
         glEnd();
 
         glBegin(GL_TRIANGLES);
-            glColor4f(p.color[0] * blah, p.color[1] * blah, p.color[2] * blah, blah);
+            glColor3f(p.color[0] * blah, p.color[1] * blah, p.color[2] * blah);
+            //glColor4f(p.color[0], p.color[1], p.color[2], blah);
             glVertex2f(p.curr.x - d, p.curr.y);
             glVertex2f(p.curr.x + d, p.curr.y);
-            glColor4f(1.0 * blah, 1.0 * blah, 1.0 * blah, blah);
+            glColor4f(1.0, 1.0, 1.0, blah);
             glVertex2f(p.start.x, p.start.y);
         glEnd();
     }
+    glDepthMask(true);
     glFlush();
     //glutPostRedisplay();
 }
@@ -172,6 +177,7 @@ void idle()
             particles->insert(i, p);
         }
     }
+    std::sort(particles->begin(), particles->end(), sortParticle);
     display();
     glutTimerFunc(33, idleFrame, 0);
 }
@@ -223,6 +229,8 @@ void init()
     glColor3f(0.0, 0.0, 0.0);
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glEnable(GL_MULTISAMPLE);
 }
 
 void initGL(std::vector<packet> *p, int argc, char *argv[])
@@ -235,7 +243,7 @@ void initGL(std::vector<packet> *p, int argc, char *argv[])
     isFullScreen = false;
 
     glutCreateWindow("NetworkMonitor");
-    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_SINGLE);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_SINGLE | GLUT_DOUBLE | GLUT_MULTISAMPLE);
     glutInitWindowPosition(400,400);
     glutInitWindowSize(800,800);
     glutDisplayFunc(display);
