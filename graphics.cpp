@@ -21,6 +21,10 @@ std::vector<packet> *packets;
 
 std::vector<particle> *particles;
 
+double background[] = {0.0, 0.0, 0.0, 0.0};
+
+int totalCycles = 30;
+
 double maxWidth = 10.0;
 double particleWidth = 0.025;
 
@@ -77,8 +81,9 @@ void display()
     glShadeModel(GL_SMOOTH);
     for (std::vector<particle>::iterator i = particles->begin(); i < particles->end(); i++) {
         particle p = *i;
+        double blah = (double)p.cyclesToKeepAround / (double)totalCycles;
         glBegin(GL_QUADS);
-            glColor3f(p.color[0], p.color[1], p.color[2]);
+            glColor3f(p.color[0] * blah, p.color[1] * blah, p.color[2] * blah);
             glVertex2f(p.curr.x - d, p.curr.y - d);
             glVertex2f(p.curr.x + d, p.curr.y - d);
             glVertex2f(p.curr.x + d, p.curr.y + d);
@@ -86,10 +91,10 @@ void display()
         glEnd();
 
         glBegin(GL_TRIANGLES);
-            glColor3f(p.color[0], p.color[1], p.color[2]);
+            glColor4f(p.color[0] * blah, p.color[1] * blah, p.color[2] * blah, blah);
             glVertex2f(p.curr.x - d, p.curr.y);
             glVertex2f(p.curr.x + d, p.curr.y);
-            glColor3f(1,1,1);
+            glColor4f(1.0 * blah, 1.0 * blah, 1.0 * blah, blah);
             glVertex2f(p.start.x, p.start.y);
         glEnd();
     }
@@ -108,7 +113,7 @@ void idle()
         pthread_mutex_lock(&networkPacketsMutex);
         packet pkt = packets->back();
         particle p;
-        p.cyclesToKeepAround = 30;
+        p.cyclesToKeepAround = totalCycles;
         p.start = calculatePosition(pkt.sourceAddr, 2, 2);
         p.dest = calculatePosition(pkt.destAddr, 2, 2);
         p.curr.x = p.start.x; p.curr.y = p.start.y;
