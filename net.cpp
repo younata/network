@@ -99,7 +99,7 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pk
     packet p = packet(d, s, type);
 
     pthread_mutex_lock(&networkPacketsMutex);
-    if (packets->size() < 50)
+    if (packets->size() < 100)
         packets->push_back(p);
     pthread_mutex_unlock(&networkPacketsMutex);
 /*
@@ -124,6 +124,8 @@ void *initNet(void *arg)
     char *dev = args.deviceName;
     char errbuf[PCAP_ERRBUF_SIZE];
     pcap_t *handle;
+
+    int promiscuous = -1;
 
     char filter_exp[] = "ip";
     struct bpf_program fp;
@@ -152,7 +154,7 @@ void *initNet(void *arg)
 #endif
     }
 
-    if ((handle = pcap_open_live(dev, SNAP_LEN, -1, 1000, errbuf)) == NULL) {
+    if ((handle = pcap_open_live(dev, SNAP_LEN, promiscuous, 1000, errbuf)) == NULL) {
         fprintf(stderr, "Couldn't open device %s: %s\n", dev, errbuf);
         exit(-3);
     }

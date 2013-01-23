@@ -21,11 +21,12 @@ On ubuntu, have freeglut-dev and libpcap-dev installed, then "make" and ./networ
 ###Colors
 
 Packets are currently colored according to the following color scheme:
-TCP:     blue green (RGB 0, 0.5, 1.0)
-UDP:     green      (RGB 0, 1.0, 0)
-ICMP:    blue       (RGB 0, 0, 1.0)
-IP:      green blue (RGB 0, 1.0, 0.5)
-Unknown: red        (RGB 1.0, 0, 0)
+
+TCP:     blue green (RGB 0, 0.5, 1.0)  
+UDP:     green      (RGB 0, 1.0, 0)  
+ICMP:    blue       (RGB 0, 0, 1.0)  
+IP:      green blue (RGB 0, 1.0, 0.5)  
+Unknown: red        (RGB 1.0, 0, 0)  
 
 ***
 ###Technical Details

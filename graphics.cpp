@@ -80,6 +80,7 @@ bool sortParticle(particle a, particle b) { return (a.cyclesToKeepAround < b.cyc
 
 void display()
 {
+    //glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     float vert[3];
     double d = particleWidth / 2.0;
@@ -118,7 +119,9 @@ void idleFrame(int i)
 
 void idle()
 {
-    if (packets->size() != 0) {
+    int amount=3;
+    while (packets->size() != 0 && amount > 0) {
+        amount--;
         pthread_mutex_lock(&networkPacketsMutex);
         packet pkt = packets->back();
         particle p;
@@ -127,7 +130,7 @@ void idle()
         p.dest = calculatePosition(pkt.destAddr, 2, 2);
         p.curr.x = p.start.x; p.curr.y = p.start.y;
 
-        p.speed = sqrt(p.curr.x * p.curr.x + p.curr.y * p.curr.y) / 30;
+        p.speed = sqrt(pow(p.curr.x - p.dest.x, 2) + pow(p.curr.y - p.dest.y, 2)) / 30;
 
         switch (pkt.type) {
             case 0:
@@ -158,7 +161,8 @@ void idle()
         }
         packets->pop_back();
         pthread_mutex_unlock(&networkPacketsMutex);
-        particles->push_back(p);
+        if (p.speed > 0)
+            particles->push_back(p);
     }
     for (std::vector<particle>::iterator i = particles->begin(); i < particles->end(); i++) {
         particle p = *i;
