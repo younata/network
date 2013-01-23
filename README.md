@@ -18,6 +18,16 @@ On osx, make sure you have xcode and such installed, then just type "make" to bu
 On ubuntu, have freeglut-dev and libpcap-dev installed, then "make" and ./network
 
 ***
+###Colors
+
+Packets are currently colored according to the following color scheme:
+TCP:     blue green (RGB 0, 0.5, 1.0)
+UDP:     green      (RGB 0, 1.0, 0)
+ICMP:    blue       (RGB 0, 0, 1.0)
+IP:      green blue (RGB 0, 1.0, 0.5)
+Unknown: red        (RGB 1.0, 0, 0)
+
+***
 ###Technical Details
 
 Probably the most interesting bit is my algorithm for mapping an IP address to a point in a 2d plane.
