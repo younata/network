@@ -28,6 +28,10 @@ int totalCycles = 30;
 double maxWidth = 10.0;
 double particleWidth = 0.025;
 
+struct point2d windowPos;
+struct point2d windowSize;
+bool isFullScreen = false;
+
 struct point2d calculatePosition(unsigned char addr[], double height, double width)
 {
     struct point2d ret;
@@ -191,21 +195,34 @@ void changeSize(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 }
 
+void keyboard(unsigned char key, int x, int y)
+{
+    switch (key) {
+        case 'f':
+            if (!isFullScreen) {
+                windowPos.x = (double)glutGet(GLUT_WINDOW_X);
+                windowPos.y = (double)glutGet(GLUT_WINDOW_Y);
+                windowSize.x = (double)glutGet(GLUT_WINDOW_WIDTH);
+                windowSize.y = (double)glutGet(GLUT_WINDOW_HEIGHT);
+                isFullScreen = true;
+                glutFullScreen();
+            } else {
+                glutReshapeWindow((int)windowSize.x, (int)windowSize.y);
+                glutPositionWindow((int)windowPos.x, (int)windowPos.y);
+                glutSetWindowTitle("NetworkMonitor");
+                glutSetIconTitle("NetworkMonitor");
+                isFullScreen = false;
+            }
+            break;
+    }
+}
+
 void init()
 {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glColor3f(0.0, 0.0, 0.0);
 
     glEnable(GL_DEPTH_TEST);
-}
-
-void *runGLThread(void *args)
-{
-    while (1) {
-        usleep(33000);
-        idle();
-        glutPostRedisplay();
-    }
 }
 
 void initGL(std::vector<packet> *p, int argc, char *argv[])
@@ -215,12 +232,15 @@ void initGL(std::vector<packet> *p, int argc, char *argv[])
 
     glutInit(&argc, argv);
 
+    isFullScreen = false;
+
     glutCreateWindow("NetworkMonitor");
     glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_SINGLE);
     glutInitWindowPosition(400,400);
     glutInitWindowSize(800,800);
     glutDisplayFunc(display);
     glutReshapeFunc(changeSize);
+    glutKeyboardFunc(keyboard);
     particleWidth = 8.0 / 800.0;
     init();
     glutIdleFunc(NULL);
