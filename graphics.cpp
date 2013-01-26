@@ -105,12 +105,6 @@ struct point3d calculateCurrentPosition3d(struct point3d curr, struct point3d de
 
 bool sortParticle(particle a, particle b) { return (a.cyclesToKeepAround < b.cyclesToKeepAround); }
 
-bool sortParticle3d(particle a, particle b)
-{
-    bool aIsOlder = sortParticle(a, b);
-    return aIsOlder && fabs(a.curr.z) > fabs(b.curr.z);
-}
-
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -275,10 +269,7 @@ void idle()
             particles->insert(i, p);
         }
     }
-    if (!is3d)
-        std::sort(particles->begin(), particles->end(), sortParticle);
-    else
-        std::sort(particles->begin(), particles->end(), sortParticle3d);
+    std::sort(particles->begin(), particles->end(), sortParticle);
     display();
     glutTimerFunc(33, idleFrame, 0);
 }
