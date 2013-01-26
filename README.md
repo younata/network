@@ -42,4 +42,4 @@ At the end of this, I have an x and a y, which are at most 65535. I then normali
 ***
 ###Further Work
 
-~~I'm interested in taking this to a 3d graph, the two current thoughts are either to figure out a way to map an IP address to a point in a cube, or have two planes (one is the source plane, the other is the destination), and have packets travel from one plane to the other.~~ This has been implemented. Pass in a second argument (sudo ./network <device> foo) to enable it.
+~~I'm interested in taking this to a 3d graph, the two current thoughts are either to figure out a way to map an IP address to a point in a cube, or have two planes (one is the source plane, the other is the destination), and have packets travel from one plane to the other.~~ This has been implemented. Pass in a second argument (sudo ./network \<device\> foo) to enable it.
