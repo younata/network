@@ -18,6 +18,15 @@ On osx, make sure you have xcode and such installed, then just type "make" to bu
 On ubuntu, have freeglut-dev and libpcap-dev installed, then "make" and ./network
 
 ***
+###Using
+
+As stated, this requires root to run.
+
+As of now, the available command line options are:  
+`-d <device>`, and `-3`.  
+`-d <device>` specifies \<device\> as your desired network device, and `-3` specifies the 3d representation (which is prettier, but harder to interpret).
+
+***
 ###Colors
 
 Packets are currently colored according to the following color scheme:
@@ -42,4 +51,4 @@ At the end of this, I have an x and a y, which are at most 65535. I then normali
 ***
 ###Further Work
 
-~~I'm interested in taking this to a 3d graph, the two current thoughts are either to figure out a way to map an IP address to a point in a cube, or have two planes (one is the source plane, the other is the destination), and have packets travel from one plane to the other.~~ This has been implemented. Pass in a second argument (sudo ./network \<device\> foo) to enable it.
+~~I'm interested in taking this to a 3d graph, the two current thoughts are either to figure out a way to map an IP address to a point in a cube, or have two planes (one is the source plane, the other is the destination), and have packets travel from one plane to the other.~~ This has been implemented.

@@ -334,15 +334,12 @@ void init()
     glEnable(GL_MULTISAMPLE);
 }
 
-void initGL(std::vector<packet> *p, int argc, char *argv[])
+void initGL(std::vector<packet> *p, int argc, char *argv[], bool use3d)
 {
     packets = p;
     particles = new std::vector<particle>();
 
-    if (argc >= 3) {
-        is3d = true;
-        fprintf(stderr, "Using 3d representation.\n");
-    }
+    is3d = use3d;
 
     glutInit(&argc, argv);
 
