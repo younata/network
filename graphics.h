@@ -12,15 +12,17 @@
 #include "main.h"
 #include "net.h"
 
-struct point2d {
+struct point3d {
     double x;
     double y;
+    double z;
 };
 
 void initGL(std::vector<packet> *p, int argc, char *argv[]);
 
-struct point2d calculatePosition(unsigned char addr[], double height, double width);
-struct point2d calculateCurrentPosition(struct point2d curr, struct point2d dest, double speed);
+struct point3d calculatePosition(unsigned char addr[], double height, double width);
+struct point3d calculateCurrentPosition(struct point3d curr, struct point3d dest, double speed);
+struct point3d calculateCurrentPosition3d(struct point3d curr, struct point3d dest, struct point3d start, double speed);
 
 void idle();
 
