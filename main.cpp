@@ -14,9 +14,12 @@ int main(int argc, char *argv[])
 
     bool use3d = false;
     int eger;
-    while ((eger = getopt(argc, argv, "d:3")) != -1) {
+    while ((eger = getopt(argc, argv, "d:i:3")) != -1) {
         switch (eger) {
             case 'd':
+                device = optarg;
+                break;
+            case 'i':
                 device = optarg;
                 break;
             case '3':

@@ -36,6 +36,9 @@ bool isFullScreen = false;
 
 bool is3d = false;
 
+struct point3d curMousePos;
+char mouseAddr[18];
+
 struct point3d calculatePosition(unsigned char addr[], double height, double width)
 {
     struct point3d ret;
@@ -105,6 +108,15 @@ struct point3d calculateCurrentPosition3d(struct point3d curr, struct point3d de
 
 bool sortParticle(particle a, particle b) { return (a.cyclesToKeepAround < b.cyclesToKeepAround); }
 
+void drawString (void * font, char *s, float x, float y, float z)
+{
+    unsigned int i;
+    glColor3f(1.0, 1.0, 1.0);
+    glRasterPos3f(x, y, z);
+    for (i = 0; i < strlen (s); i++)
+        glutBitmapCharacter(font, s[i]);
+}
+
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -145,8 +157,8 @@ void display()
             glBegin(GL_TRIANGLES);
                 glColor3f(p.color[0] * fade, p.color[1] * fade, p.color[2] * fade);
                 //glColor4f(p.color[0], p.color[1], p.color[2], fade);
-                glVertex2f(p.curr.x - d, p.curr.y);
-                glVertex2f(p.curr.x + d, p.curr.y);
+                glVertex2f(p.curr.x - d, p.curr.y + d);
+                glVertex2f(p.curr.x + d, p.curr.y - d);
                 glColor4f(1.0, 1.0, 1.0, fade);
                 glVertex2f(p.start.x, p.start.y);
             glEnd();
@@ -188,9 +200,13 @@ void display()
             glEnd();
         }
     }
+
+    // draw the mouse pointer.
+    if (!is3d)
+        drawString(GLUT_BITMAP_9_BY_15, mouseAddr, curMousePos.x, curMousePos.y, curMousePos.z);
+
     glDepthMask(true);
     glFlush();
-    //glutPostRedisplay();
 }
 
 void idleFrame(int i)
@@ -315,6 +331,54 @@ void keyboard(unsigned char key, int x, int y)
     }
 }
 
+void mouseMoved(int m, int n)
+{
+    double w = (double)glutGet(GLUT_WINDOW_WIDTH);
+    double h = (double)glutGet(GLUT_WINDOW_HEIGHT);
+
+    // Normalize from 0 to 1
+    double x = (m / w);
+    double y = (n / h);
+
+    if (x > 1.0 || y > 1.0 || x < 0.0 || y < 0.0) {
+        mouseAddr[0] = 0;
+        return;
+    }
+    y -= 1.0;
+    y = fabs(y);
+
+    curMousePos.x = (x * 2.0) - 1.0;
+    curMousePos.y = (y * 2.0) - 1.0;
+    curMousePos.z = 0.0;
+
+    double maxHeight = 65535.0;
+    int a = x * maxHeight;
+    int b = y * maxHeight;
+
+    unsigned char addr[4];
+    int j = a & 0xf000;
+    int k = b & 0xf000;
+    addr[0]  = j >> 12;
+    addr[0] += (k >> 12) << 4;
+
+    j = a & 0xf00;
+    k = b & 0xf00;
+    addr[1]  = j >> 8;
+    addr[1] += (k >> 8) << 4;
+
+    j = a & 0xf0;
+    k = b & 0xf0;
+    addr[2]  = j >> 4;
+    addr[2] += (k >> 4) << 4;
+
+    j = a & 0xf;
+    k = b & 0xf;
+    addr[3]  = j;
+    addr[3] += k << 4;
+
+    sprintf(mouseAddr, "%d.%d.%d.%d", addr[0], addr[1], addr[2], addr[3]);
+}
+
 void init()
 {
     glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -343,15 +407,17 @@ void initGL(std::vector<packet> *p, int argc, char *argv[], bool use3d)
     glutDisplayFunc(display);
     glutReshapeFunc(changeSize);
     glutKeyboardFunc(keyboard);
+    mouseAddr[0] = 0;
+    if (!is3d) {
+        curMousePos.x = 0.0;
+        curMousePos.y = 0.0;
+        curMousePos.z = 0.0;
+        glutMotionFunc(mouseMoved);
+        glutPassiveMotionFunc(mouseMoved);
+    }
     particleWidth = 8.0 / 800.0;
     init();
     glutIdleFunc(NULL);
     glutTimerFunc(33, idleFrame, 0);
-    /*
-    pthread_t glThread;
-    pthread_create(&glThread, NULL, runGLThread, NULL);
-    */
     glutMainLoop();
-
-    //pthread_join(glThread, NULL);
 }

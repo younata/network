@@ -142,7 +142,7 @@ void *initNet(void *arg)
         fprintf(stderr, "Couldn't get netmask for device %s: %s\n", dev, errbuf);
         net = mask = 0;
 #ifdef __APPLE__
-        dev = "en1";
+        dev = (char *)"en1";
         fprintf(stderr, "Trying device en1\n");
         if (pcap_lookupnet(dev, &net, &mask, errbuf) == -1) {
             fprintf(stderr, "Couldn't get netmask for device %s: %s\n", dev, errbuf);

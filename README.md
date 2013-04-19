@@ -23,8 +23,10 @@ On ubuntu, have freeglut-dev and libpcap-dev installed, then "make" and ./networ
 As stated, this requires root to run.
 
 As of now, the available command line options are:  
-`-d <device>`, and `-3`.  
-`-d <device>` specifies \<device\> as your desired network device, and `-3` specifies the 3d representation (which is prettier, but harder to interpret).
+`-d <device>`, `-i <device>`, and `-3`.  
+`-d <device>` specifies \<device\> as your desired network device,  
+`-i <device>` works exactly as `-d`.  
+`-3` specifies the 3d representation (which is prettier, but harder to interpret).
 
 ***
 ###Colors
@@ -51,4 +53,6 @@ At the end of this, I have an x and a y, which are at most 65535. I then normali
 ***
 ###Further Work
 
-~~I'm interested in taking this to a 3d graph, the two current thoughts are either to figure out a way to map an IP address to a point in a cube, or have two planes (one is the source plane, the other is the destination), and have packets travel from one plane to the other.~~ This has been implemented.
+In the 3d display, I'd like to be able to accurately display the IP address for both planes. This works for the 2d display, but is currently disabled for the 3d display while I figure it out.
+
+Additionally, I'd like to be able to display the planes that IP addresses are coming/going from in the 3d display.
