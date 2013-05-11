@@ -236,9 +236,9 @@ void idle()
 
         switch (pkt.type) {
             case 0:
-                p.color[0] = 0.0;
-                p.color[1] = 0.5;
-                p.color[2] = 1.0;
+                p.color[0] = 0.5;
+                p.color[1] = 0.0;
+                p.color[2] = 0.5;
                 break;
             case 1:
                 p.color[0] = 0.0;
@@ -253,7 +253,7 @@ void idle()
             case 3:
                 p.color[0] = 0.0;
                 p.color[1] = 1.0;
-                p.color[2] = 0.5;
+                p.color[2] = 1.0;
                 break;
             case 4:
                 p.color[0] = 1.0;

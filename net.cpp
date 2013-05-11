@@ -102,19 +102,6 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pk
     if (packets->size() < 100)
         packets->push_back(p);
     pthread_mutex_unlock(&networkPacketsMutex);
-/*
-    printf("recieved a packet from ");
-    for (int i = 0; i < 4; i++) {
-        printf("%d", s[i]);
-        if (i < 3) printf(".");
-    }
-    printf(" headed for ");
-    for (int i = 0; i < 4; i++) {
-        printf("%d", d[i]);
-        if (i < 3) printf(".");
-    }
-    printf("\n");
-//*/
 }
 
 void *initNet(void *arg)

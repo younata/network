@@ -33,10 +33,10 @@ As of now, the available command line options are:
 
 Packets are currently colored according to the following color scheme:
 
-TCP:     blue green (RGB 0, 0.5, 1.0)  
+TCP:     purple     (RGB 0.5, 0, 0.5)  
 UDP:     green      (RGB 0, 1.0, 0)  
 ICMP:    blue       (RGB 0, 0, 1.0)  
-IP:      green blue (RGB 0, 1.0, 0.5)  
+IP:      cyan       (RGB 0, 1.0, 1.0)  
 Unknown: red        (RGB 1.0, 0, 0)  
 
 ***
