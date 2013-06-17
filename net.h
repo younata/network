@@ -10,7 +10,7 @@
 #include <arpa/inet.h>
 
 struct argumentsToInitNet {
-    std::vector<packet> *p;
+    std::list<packet> *p;
     char *deviceName;
 };
 

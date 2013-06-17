@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    std::vector<packet> *packets = new std::vector<packet>();
+    std::list<packet> *packets = new std::list<packet>();
     pthread_t networkThread;
 
     pthread_mutex_init(&networkPacketsMutex, NULL);

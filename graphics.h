@@ -18,7 +18,7 @@ struct point3d {
     double z;
 };
 
-void initGL(std::vector<packet> *p, int argc, char *argv[], bool use3d);
+void initGL(std::list<packet> *p, int argc, char *argv[], bool use3d);
 
 struct point3d calculatePosition(unsigned char addr[], double height, double width);
 struct point3d calculateCurrentPosition(struct point3d curr, struct point3d dest, double speed);

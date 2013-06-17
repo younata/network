@@ -2,7 +2,7 @@
 
 extern pthread_mutex_t networkPacketsMutex;
 
-static std::vector<packet> *packets;
+static std::list<packet> *packets;
 
 /* default snap length (maximum bytes per packet to capture) */
 #define SNAP_LEN 1518
@@ -99,8 +99,8 @@ void got_packet(u_char *args, const struct pcap_pkthdr *header, const u_char *pk
     packet p = packet(d, s, type);
 
     pthread_mutex_lock(&networkPacketsMutex);
-    if (packets->size() < 100)
-        packets->push_back(p);
+    //if (packets->size() < 100)
+    packets->push_back(p);
     pthread_mutex_unlock(&networkPacketsMutex);
 }
 

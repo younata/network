@@ -21,9 +21,9 @@ struct particle {
     double color[3];
 };
 
-std::vector<packet> *packets;
+std::list<packet> *packets;
 
-std::vector<particle> *particles;
+std::list<particle> *particles;
 
 int totalCycles = 30;
 
@@ -142,7 +142,7 @@ void display()
     }
 */
     
-    for (std::vector<particle>::iterator i = particles->begin(); i < particles->end(); i++) {
+    for (std::list<particle>::iterator i = particles->begin(); i != particles->end(); i++) {
         particle p = *i;
         double fade = (double)p.cyclesToKeepAround / (double)totalCycles;
         if (!is3d) {
@@ -266,14 +266,14 @@ void idle()
         if (p.speed > 0)
             particles->push_back(p);
     }
-    for (std::vector<particle>::iterator i = particles->begin(); i < particles->end(); i++) {
+    for (std::list<particle>::iterator i = particles->begin(); i != particles->end(); i++) {
         particle p = *i;
         bool keep = true;
         if (p.curr.x == p.dest.x && p.curr.y == p.dest.y) {
             p.cyclesToKeepAround--;
             if (p.cyclesToKeepAround <= 0) {
                 keep = false;
-                particles->erase(i);
+                i = particles->erase(i);
             }
         }
         if (keep) {
@@ -281,11 +281,11 @@ void idle()
                 p.curr = calculateCurrentPosition(p.curr, p.dest, p.speed);
             else
                 p.curr = calculateCurrentPosition3d(p.curr, p.dest, p.start, p.speed);
-            particles->erase(i);
+            i = particles->erase(i);
             particles->insert(i, p);
         }
     }
-    std::sort(particles->begin(), particles->end(), sortParticle);
+    particles->sort(sortParticle);
     display();
     glutTimerFunc(33, idleFrame, 0);
 }
@@ -328,6 +328,8 @@ void keyboard(unsigned char key, int x, int y)
                 isFullScreen = false;
             }
             break;
+        case 'q':
+            exit(0);
     }
 }
 
@@ -389,10 +391,10 @@ void init()
     glEnable(GL_MULTISAMPLE);
 }
 
-void initGL(std::vector<packet> *p, int argc, char *argv[], bool use3d)
+void initGL(std::list<packet> *p, int argc, char *argv[], bool use3d)
 {
     packets = p;
-    particles = new std::vector<particle>();
+    particles = new std::list<particle>();
 
     is3d = use3d;
 

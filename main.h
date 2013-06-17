@@ -1,7 +1,7 @@
 #ifndef __network_main__
 #define __network_main__
 
-#include <vector>
+#include <list>
 
 #include <stdio.h>
 #include <stdlib.h>
