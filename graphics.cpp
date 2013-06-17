@@ -164,7 +164,6 @@ void display()
 
             glBegin(GL_TRIANGLES);
                 glColor3f(p.color[0] * fade, p.color[1] * fade, p.color[2] * fade);
-                //glColor4f(p.color[0], p.color[1], p.color[2], fade);
                 glVertex2f(p.curr.x - d, p.curr.y + d);
                 glVertex2f(p.curr.x + d, p.curr.y - d);
                 glColor4f(1.0, 1.0, 1.0, fade);
@@ -416,7 +415,8 @@ void initGL(std::list<packet> *p, int argc, char *argv[], bool use3d)
     isFullScreen = false;
 
     glutCreateWindow("NetworkMonitor");
-    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_SINGLE | GLUT_DOUBLE | GLUT_MULTISAMPLE);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_SINGLE | GLUT_DOUBLE | GLUT_MULTISAMPLE);
+    glEnable(GL_MULTISAMPLE);
     glutInitWindowPosition(400,400);
     glutInitWindowSize(800,800);
     glutDisplayFunc(display);
