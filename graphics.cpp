@@ -8,6 +8,7 @@
 #include <time.h>
 
 #include "cube.h"
+#include "tail.h"
 
 extern pthread_mutex_t networkPacketsMutex;
 
@@ -172,39 +173,9 @@ void display()
         } else {
             Cube c = Cube(d, p.curr, p.color[0], p.color[1], p.color[2]);
             c.render(fade);
-
-            // drawing the tail!
-            glBegin(GL_TRIANGLES);
-                glColor3f(p.color[0] * fade, p.color[1] * fade, p.color[2] * fade);
-                glVertex3f(p.curr.x - d, p.curr.y - d, p.curr.z + d);
-                glVertex3f(p.curr.x, p.curr.y - d, p.curr.z + d);
-                glColor4f(1.0, 1.0, 1.0, fade);
-                glVertex3f(p.start.x, p.start.y, p.start.z);
-            glEnd();
-
-            glBegin(GL_TRIANGLES);
-                glColor3f(p.color[0] * fade, p.color[1] * fade, p.color[2] * fade);
-                glVertex3f(p.curr.x + d, p.curr.y - d, p.curr.z + d);
-                glVertex3f(p.curr.x, p.curr.y - d, p.curr.z + d);
-                glColor4f(1.0, 1.0, 1.0, fade);
-                glVertex3f(p.start.x, p.start.y, p.start.z);
-            glEnd();
-
-            glBegin(GL_TRIANGLES);
-                glColor3f(p.color[0] * fade, p.color[1] * fade, p.color[2] * fade);
-                glVertex3f(p.curr.x + d, p.curr.y - d, p.curr.z - d);
-                glVertex3f(p.curr.x, p.curr.y - d, p.curr.z - d);
-                glColor4f(1.0, 1.0, 1.0, fade);
-                glVertex3f(p.start.x, p.start.y, p.start.z);
-            glEnd();
-
-            glBegin(GL_TRIANGLES);
-                glColor3f(p.color[0] * fade, p.color[1] * fade, p.color[2] * fade);
-                glVertex3f(p.curr.x - d, p.curr.y - d, p.curr.z - d);
-                glVertex3f(p.curr.x, p.curr.y - d, p.curr.z - d);
-                glColor4f(1.0, 1.0, 1.0, fade);
-                glVertex3f(p.start.x, p.start.y, p.start.z);
-            glEnd();
+            Tail t = Tail(p.curr, p.start, p.color[0], p.color[1], p.color[2]);
+            t.size = d;
+            t.render(fade);
         }
     }
 
@@ -415,8 +386,7 @@ void initGL(std::list<packet> *p, int argc, char *argv[], bool use3d)
     isFullScreen = false;
 
     glutCreateWindow("NetworkMonitor");
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_SINGLE | GLUT_DOUBLE | GLUT_MULTISAMPLE);
-    glEnable(GL_MULTISAMPLE);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_ALPHA | GLUT_DEPTH | GLUT_SINGLE | GLUT_MULTISAMPLE);
     glutInitWindowPosition(400,400);
     glutInitWindowSize(800,800);
     glutDisplayFunc(display);
