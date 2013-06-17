@@ -5,6 +5,8 @@
 
 #include <algorithm>
 
+#include <time.h>
+
 #include "cube.h"
 
 extern pthread_mutex_t networkPacketsMutex;
@@ -38,6 +40,12 @@ bool is3d = false;
 
 struct point3d curMousePos;
 char mouseAddr[18];
+
+double getCurrentTime()
+{
+    clock_t t = clock();
+    return (double)t / CLOCKS_PER_SEC;
+}
 
 struct point3d calculatePosition(unsigned char addr[], double height, double width)
 {
@@ -211,7 +219,13 @@ void display()
 
 void idleFrame(int i)
 {
+    double x = getCurrentTime();
     idle();
+    double dt = getCurrentTime() - x;
+    double w = 33 - (dt * 1000);
+    if (w < 0)
+        fprintf(stderr, "Warning: negative (%f) waiting time.\n", w);
+    glutTimerFunc(w, idleFrame, 0);
 }
 
 void idle()
@@ -282,12 +296,11 @@ void idle()
             else
                 p.curr = calculateCurrentPosition3d(p.curr, p.dest, p.start, p.speed);
             i = particles->erase(i);
-            particles->insert(i, p);
+            i = particles->insert(i, p);
         }
     }
     particles->sort(sortParticle);
     display();
-    glutTimerFunc(33, idleFrame, 0);
 }
 
 void changeSize(int w, int h)

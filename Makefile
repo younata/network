@@ -1,6 +1,6 @@
 UNAME := $(shell uname)
 
-FLAGS = -lpthread -lpcap -lm -g
+FLAGS = -lpthread -lpcap -lm
 
 ifeq ($(UNAME),Darwin)
 	FLAGS += -framework GLUT -framework OpenGL
