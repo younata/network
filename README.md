@@ -1,6 +1,6 @@
 ###About
 
-![screenshot](http://i.imgur.com/LacGXJD.png)
+![screenshot](screenshot.png)
 
 This is a graphical representation of packets moving about the IPv4 space.
 
