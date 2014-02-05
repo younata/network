@@ -196,3 +196,27 @@ void Cube::render(float *vtx, float *col, double fade)
     assignBuffer((vtx+3), center.x + x, center.y - y, center.z - z);
     assignBuffer((vtx+6), center.x + x, center.y + y, center.z - z);
 }
+
+void cube::generateBuffers()
+{
+    glGenVertexArrays(1, &vertexArrayObject);
+    glGenBuffers(2, vertexBufferObject);
+}
+
+void cube::render(double fade)
+{
+    float *vtx = (float *)malloc(108 * sizeof(float));
+    float *col = (float *)malloc(108 * sizeof(float));
+
+    render(vtx, col, fade);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject[0]);
+    glBufferData(GL_ARRAY_BUFFER, 108*sizeof(float), vtx, GL_DYNAMIC_DRAW);
+    glVertexAttribPoint(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertexArrayObject[1]);
+
+    glBufferData(GL_ARRAY_BUFFER, 108*sizeof(float), col, GL_DYNAMIC_DRAW);
+    glVertexAttribPoint(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
+}

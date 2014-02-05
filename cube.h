@@ -6,6 +6,9 @@
 void assignBuffer(float *vtx, float x, float y, float z);
 
 class Cube {
+private:
+    GLuint vertexArrayObject;
+    GLuint vertexBufferObject[2];
 public:
     point3d size;
     point3d center;
@@ -15,6 +18,10 @@ public:
     void render(double fade=1.0);
     // this uses buffers (which are passed in and assumed to be at least size 108)
     void render(float *vtx, float *col, double fade=1.0);
+
+    // GL 3.2+
+    void generateBuffers();
+    void render(double fade=1.0);
 
     Cube(point3d size, point3d center, double r, double g, double b);
     Cube(double s, point3d center, double r, double g, double b);
