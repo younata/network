@@ -170,7 +170,6 @@ void Cube::render(float *vtx, float *col, double fade)
     assignBuffer((vtx+6), center.x - x, center.y + y, center.z - z);
 
     vtx += 9;
-    glColor3f(color[0] * fade, color[1] * fade, color[2] * fade);
     assignBuffer((vtx+0), center.x - x, center.y + y, center.z - z);
     assignBuffer((vtx+3), center.x + x, center.y + y, center.z - z);
     assignBuffer((vtx+6), center.x + x, center.y + y, center.z + z);
