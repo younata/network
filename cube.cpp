@@ -1,5 +1,14 @@
 #include "cube.h"
 
+#ifdef __APPLE__
+#include <OpenGL/gl3.h>
+#include <OpenGL/glut.h>
+#define GL_DO_NOT_WARN_IF_MULTI_GL_VERSIONS_INCLUDED
+#else
+#include <GL/glut.h>
+#include <GL/gl3.h>
+#endif
+
 void assignBuffer(float *vtx, float x, float y, float z)
 {
     vtx[0] = x;
@@ -7,18 +16,31 @@ void assignBuffer(float *vtx, float x, float y, float z)
     vtx[2] = z;
 }
 
-Cube::Cube(point3d size, point3d center, double r, double g, double b): size(size), center(center)
+Cube::Cube() : GLObject()
+{
+    verts = (float *)malloc(108 * sizeof(float));
+    colors = (float *)malloc(108 * sizeof(float));
+}
+
+Cube::Cube(point3d size, point3d center, double r, double g, double b): size(size), center(center), Cube()
 {
     color[0] = r;
     color[1] = g;
     color[2] = b;
 }
 
-Cube::Cube(double s, point3d center, double r, double g, double b): center(center)
+Cube::Cube(double s, point3d center, double r, double g, double b): center(center), Cube()
 {
     size.x = s;
     size.y = s;
     size.z = s;
+}
+
+Cube::~Cube()
+{
+    ~GLObject();
+    free(verts);
+    free(colors);
 }
 
 void Cube::render(double fade)
@@ -197,26 +219,8 @@ void Cube::render(float *vtx, float *col, double fade)
     assignBuffer((vtx+6), center.x + x, center.y + y, center.z - z);
 }
 
-void cube::generateBuffers()
+void Cube::render3(double fade)
 {
-    glGenVertexArrays(1, &vertexArrayObject);
-    glGenBuffers(2, vertexBufferObject);
-}
-
-void cube::render(double fade)
-{
-    float *vtx = (float *)malloc(108 * sizeof(float));
-    float *col = (float *)malloc(108 * sizeof(float));
-
-    render(vtx, col, fade);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject[0]);
-    glBufferData(GL_ARRAY_BUFFER, 108*sizeof(float), vtx, GL_DYNAMIC_DRAW);
-    glVertexAttribPoint(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vertexArrayObject[1]);
-
-    glBufferData(GL_ARRAY_BUFFER, 108*sizeof(float), col, GL_DYNAMIC_DRAW);
-    glVertexAttribPoint(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
+    render(verts, colors, fade);
+    GLObject->render();
 }

@@ -3,8 +3,10 @@
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
+#include <OpenGL/gl3.h>
 #else
 #include <GL/glut.h>
+#include <GL/gl3.h>
 #endif
 
 #include <math.h>
@@ -12,18 +14,43 @@
 #include "main.h"
 #include "net.h"
 
-struct point3d {
-    double x;
-    double y;
-    double z;
+#include "cube.h"
+#include "tail.h"
+#include <list>
+
+struct cubeTail {
+    struct point3d start;
+    struct point3d dest;
+    struct point3d curr;
+
+    double speed
+
+    int cyclesToKeepAround;
+
+    double color[3];
+
+    Cube cube;
+    Tail tail;
 };
 
-void initGL(std::list<packet> *p, int argc, char *argv[], bool use3d);
+class graphics {
+private:
+    GLuint vtxShader, frgShader;
+    GLuint shaderprogram;
 
-struct point3d calculatePosition(unsigned char addr[], double height, double width);
-struct point3d calculateCurrentPosition(struct point3d curr, struct point3d dest, double speed);
-struct point3d calculateCurrentPosition3d(struct point3d curr, struct point3d dest, struct point3d start, double speed);
+    GLuint vertexArrayObject;
+    GLuint vertexBufferObject[2];
 
-void idle();
+    std::list<cubeTail> cubes;
+
+public:
+    graphics();
+
+    void generateBuffers();
+
+    void tick();
+
+    ~graphics();
+};
 
 #endif

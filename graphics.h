@@ -12,11 +12,7 @@
 #include "main.h"
 #include "net.h"
 
-struct point3d {
-    double x;
-    double y;
-    double z;
-};
+#include "glObject.h"
 
 void initGL(std::list<packet> *p, int argc, char *argv[], bool use3d);
 

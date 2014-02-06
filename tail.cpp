@@ -1,6 +1,21 @@
 #include "tail.h"
 #include "cube.h" // for assignBuffer()
 
+#ifdef __APPLE__
+#include <OpenGL/gl3.h>
+#include <OpenGL/glut.h>
+#define GL_DO_NOT_WARN_IF_MULTI_GL_VERSIONS_INCLUDED
+#else
+#include <GL/glut.h>
+#include <GL/gl3.h>
+#endif
+
+Tail::Tail() : GLObject()
+{
+    verts = (float *)malloc(36 * sizeof(float));
+    colors = (float *)malloc(36 * sizeof(float));
+}
+
 Tail::Tail(point3d center, point3d start, double r, double g, double b) :
 center(center),
 start(start)
@@ -9,6 +24,14 @@ start(start)
     color[1] = g;
     color[2] = b;
 }
+
+Tail::~Tail()
+{
+    ~GLObject();
+    free(verts);
+    free(colors);
+}
+
 void Tail::render(double fade)
 {
     double d = size / 2.0;
@@ -71,4 +94,10 @@ void Tail::render(float *vtx, float *col, double fade)
     assignBuffer((vtx+27), center.x - d, center.y - d, center.z - d);
     assignBuffer((vtx+30), center.x, center.y - d, center.z - d);
     assignBuffer((vtx+33), start.x, start.y, start.z);
+}
+
+void Tail::render3(double fade)
+{
+    render(verts, colors, fade);
+    GLObject->render();
 }

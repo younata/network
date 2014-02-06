@@ -11,23 +11,11 @@
 #include "cube.h"
 #include "tail.h"
 
+#include "graphics.h"
+
 extern pthread_mutex_t networkPacketsMutex;
 
-struct particle {
-    struct point3d start;
-    struct point3d dest;
-    struct point3d curr;
-
-    double speed;
-
-    int cyclesToKeepAround;
-    
-    double color[3];
-};
-
 std::list<packet> *packets;
-
-std::list<particle> *particles;
 
 int totalCycles = 30;
 
@@ -43,22 +31,6 @@ bool is3d = false;
 struct point3d curMousePos;
 char mouseAddr[18];
 
-class graphics {
-private:
-    GLuint vtxShader, frgShader;
-    GLuint shaderprogram;
-
-    GLuint vertexArrayObject;
-    GLuint vertexBufferObject[2];
-
-    std::list<cube> cubes;
-
-public:
-    graphics();
-
-    void generateBuffers();
-    ~graphics();
-};
 
 char *readFile(char *infile)
 {
@@ -76,7 +48,7 @@ char *readFile(char *infile)
 }
 
 graphics::graphics()
-{
+
     cubes = std::list<cube>();
 }
 
@@ -122,6 +94,98 @@ graphics::generateBuffers(char *vrtFile, char *frgFile)
 
     free(frgSource);
     free(vrtSource);
+}
+
+bool sortCubes(cubeTail a, cubeTail b) { return (a.cyclesToKeepAround < b.cyclesToKeepAround); }
+
+void graphics::tick()
+{
+    while (packets->size() != 0 && amount > 0) {
+        amount--;
+        pthread_mutex_lock(&networkPacketsMutex);
+        packet pkt = packets->back();
+        cubeTail p;
+        p.cyclesToKeepAround = totalCycles;
+        p.start = calculatePosition(pkt.sourceAddr, 2, 2);
+        p.dest = calculatePosition(pkt.destAddr, 2, 2);
+        if (is3d)
+            p.dest.y = -1;
+        p.curr = p.start;
+
+        if (!is3d)
+            p.speed = sqrt(pow(p.curr.x - p.dest.x, 2) + pow(p.curr.y - p.dest.y, 2)) / 30;
+        else
+            p.speed = sqrt(pow(p.curr.x - p.dest.x, 2) + pow(p.curr.y - p.dest.y, 2) + pow(p.curr.z - p.dest.z, 2)) / 30;
+
+        switch (pkt.type) {
+            case 0:
+                p.color[0] = 0.5;
+                p.color[1] = 0.0;
+                p.color[2] = 0.5;
+                break;
+            case 1:
+                p.color[0] = 0.0;
+                p.color[1] = 1.0;
+                p.color[2] = 0.0;
+                break;
+            case 2:
+                p.color[0] = 0.0;
+                p.color[1] = 0.0;
+                p.color[2] = 1.0;
+                break;
+            case 3:
+                p.color[0] = 0.0;
+                p.color[1] = 1.0;
+                p.color[2] = 1.0;
+                break;
+            case 4:
+                p.color[0] = 1.0;
+                p.color[1] = 0.0;
+                p.color[2] = 0.0;
+                break;
+        }
+        packets->pop_back();
+        pthread_mutex_unlock(&networkPacketsMutex);
+        if (p.speed > 0) {
+            p.cube = Cube(particleWidth / 2.0, p.curr, p.color[0], p.color[1], p.color[2]);
+            p.tail = Tail(p.curr, p.start, p.color[0], p.color[1], p.color[2]);
+            p.cube.generateBuffers();
+            p.tail.generateBuffers();
+            cubes.push_back(p);
+        }
+    }
+    for (std::list<cubeTail>::iterator i = cubes.begin(); i != cubes.end(); i++) {
+        cubeTail p = *i;
+        bool keep = true;
+        if (p.curr.x == p.dest.x && p.curr.y == p.dest.y) {
+            p.cyclesToKeepAround--;
+            if (p.cyclesToKeepAround <= 0) {
+                keep = false;
+                i = cubes.erase(i);
+            }
+        }
+        if (keep) {
+            if (!is3d)
+                p.curr = calculateCurrentPosition(p.curr, p.dest, p.speed);
+            else
+                p.curr = calculateCurrentPosition3d(p.curr, p.dest, p.start, p.speed);
+            i = cubes.erase(i);
+            i = cubes.insert(i, p);
+        }
+    }
+    cubes.sort(sortCubeTail);
+
+    for (std::list<cubeTail>::iterator i = cubes.begin(); i != cubes.end(); i++) {
+        cubeTail ct = *i;
+        Cube c = ct.cube;
+        Tail t = ct.tail;
+
+        double fade = (double)ct.cyclesToKeepAround / (double)totalCycles;
+        c.center = ct.curr;
+        c.render3(fade);
+        t.center = ct.curr;
+        t.render3(fade);
+    }
 }
 
 graphics::~graphics()
