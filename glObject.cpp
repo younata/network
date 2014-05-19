@@ -1,10 +1,11 @@
 #include "glObject.h"
+#include <stdio.h>
 
 GLObject::GLObject()
 {
     isGL3 = false;
     verts = NULL;
-    colors = NULL
+    colors = NULL;
 }
 
 void GLObject::generateBuffers()
@@ -34,7 +35,7 @@ GLObject::~GLObject()
 {
     if (isGL3) {
         glDisableVertexAttribArray(0);
-        glDisableVertexAttribArray(1)
+        glDisableVertexAttribArray(1);
         glDeleteBuffers(2, vertexBufferObject);
     }
 }

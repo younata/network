@@ -3,7 +3,7 @@
 
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
-#include <OpenGL/glut.h>
+#include <GLUT/glut.h>
 #define GL_DO_NOT_WARN_IF_MULTI_GL_VERSIONS_INCLUDED
 #else
 #include <GL/glut.h>
@@ -27,7 +27,6 @@ start(start)
 
 Tail::~Tail()
 {
-    ~GLObject();
     free(verts);
     free(colors);
 }
@@ -99,5 +98,5 @@ void Tail::render(float *vtx, float *col, double fade)
 void Tail::render3(double fade)
 {
     render(verts, colors, fade);
-    GLObject->render();
+    GLObject::render();
 }

@@ -2,9 +2,8 @@
 #define __GLOBJECT_H__
 
 #ifdef __APPLE__
-#define GL_DO_NOT_WARN_IF_MULTI_GL_VERSIONS_INCLUDED
 #include <OpenGL/gl3.h>
-#include <OpenGL/glut.h>
+#include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #include <GL/gl3.h>
@@ -19,7 +18,7 @@ struct point3d {
 class GLObject {
 protected:
     GLuint vertexArrayObject;
-    GLuint vertexBufferObject;
+    GLuint vertexBufferObject[2];
     bool isGL3;
     float *verts;
     float *colors;

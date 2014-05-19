@@ -11,7 +11,7 @@
 #include "cube.h"
 #include "tail.h"
 
-#include "graphics.h"
+#include "gl3graphics.h"
 
 extern pthread_mutex_t networkPacketsMutex;
 
@@ -48,7 +48,7 @@ char *readFile(char *infile)
 }
 
 graphics::graphics()
-
+{
     cubes = std::list<cube>();
 }
 

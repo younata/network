@@ -4,15 +4,17 @@ UNAME := $(shell uname)
 
 FLAGS = -lpthread -lpcap -lm
 
+CPPFLAGS := -std=c++11
+
 ifeq ($(UNAME),Darwin)
-	CPPFLAGS := -Wno-deprecated-declarations
+	CPPFLAGS += -Wno-deprecated-declarations
 	FLAGS += -framework GLUT -framework OpenGL
 else
 	FLAGS += -lGL -lGLU -lglut
 endif
 
-SRCS := cube.cpp graphics.cpp main.cpp net.cpp tail.cpp
-OBJS := cube.o graphics.o main.o net.o tail.o
+SRCS := cube.cpp glObject.cpp graphics.cpp main.cpp net.cpp tail.cpp
+OBJS := cube.o glObject.o graphics.o main.o net.o tail.o
 
 all: $(NAME)
 

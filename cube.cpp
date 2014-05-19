@@ -2,7 +2,7 @@
 
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
-#include <OpenGL/glut.h>
+#include <GLUT/glut.h>
 #define GL_DO_NOT_WARN_IF_MULTI_GL_VERSIONS_INCLUDED
 #else
 #include <GL/glut.h>
@@ -22,15 +22,18 @@ Cube::Cube() : GLObject()
     colors = (float *)malloc(108 * sizeof(float));
 }
 
-Cube::Cube(point3d size, point3d center, double r, double g, double b): size(size), center(center), Cube()
+Cube::Cube(point3d size, point3d center, double r, double g, double b): Cube()
 {
+    this->size = size;
+    this->center = center;
     color[0] = r;
     color[1] = g;
     color[2] = b;
 }
 
-Cube::Cube(double s, point3d center, double r, double g, double b): center(center), Cube()
+Cube::Cube(double s, point3d center, double r, double g, double b): Cube()
 {
+    this->center = center;
     size.x = s;
     size.y = s;
     size.z = s;
@@ -38,7 +41,6 @@ Cube::Cube(double s, point3d center, double r, double g, double b): center(cente
 
 Cube::~Cube()
 {
-    ~GLObject();
     free(verts);
     free(colors);
 }
@@ -222,5 +224,5 @@ void Cube::render(float *vtx, float *col, double fade)
 void Cube::render3(double fade)
 {
     render(verts, colors, fade);
-    GLObject->render();
+    GLObject::render();
 }
