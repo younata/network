@@ -56,3 +56,5 @@ At the end of this, I have an x and a y, which are at most 65535. I then normali
 In the 3d display, I'd like to be able to accurately display the IP address for both planes. This works for the 2d display, but is currently disabled for the 3d display while I figure it out.
 
 Additionally, I'd like to be able to display the planes that IP addresses are coming/going from in the 3d display.
+
+I want to split this up into a daemon, which will monitor packets, and a client, which will handle the actual displaying of packets. They would be separate processes, and would communicate probably through posix message passing. This way, I can have the daemon run as root, and the client, which doesn't need to run as root (as far as I understand, the IPC might require the client to run as root...), and the package would be more secure this way.
